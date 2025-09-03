@@ -1,0 +1,28 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+    }                  
+header{
+    margin:50px;
+    font-weight: bold;
+
+}
+header h1{
+ font-size: 60px;
+ padding: 40px;
+ font-style: inherit;
+ border-radius: 50px white;
+ 
+}
+header p{
+    font-size: 20px;
+    line-height: 1.5;
+    padding: 10px;
+}
+header ul{
+    font-size: 20px;
+
+}

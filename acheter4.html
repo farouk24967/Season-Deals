@@ -255,8 +255,8 @@
         </select>
       </div>
 
-         <div class="form-group">
-          <label>Commune </label>
+      <div class="form-group">
+           <label>Commune </label>
           <input 
           type="text" 
           name="commune"
@@ -267,8 +267,11 @@
           <div id="commune-dropdown"></div>
 
           <input type="hidden" id="commune" required>
+
+      
         </div>
       </div>
+
 
     <!-- Type de livraison -->
     <div class="form-group">
@@ -519,105 +522,103 @@
 
     };
 
-    // 🔢 Gestion du numéro de téléphone
-    document.getElementById('operator').addEventListener('change', function () {
-      const phoneInput = document.getElementById('phone');
-      phoneInput.value = this.value; // Met le préfixe automatiquement
-    });
+     // 🔧 DOM Elements
+  const wilayaSelect = document.getElementById('wilaya');
+  const communeSearch = document.getElementById('commune-search');
+  const communeDropdown = document.getElementById('commune-dropdown');
+  const hiddenCommune = document.getElementById('commune'); // champ caché pour Make
+  const operatorSelect = document.getElementById('operator');
+  const phoneInput = document.getElementById('phone');
+  const form = document.getElementById('myform');
 
-    document.getElementById('phone').addEventListener('input', function (e) {
-      let value = e.target.value.replace(/\D/g, ''); // Garde que les chiffres
-      const operatorSelect = document.getElementById('operator');
-      const operatorPrefix = operatorSelect.value;
+  // 📱 Gestion du préfixe opérateur
+  operatorSelect.addEventListener('change', () => {
+    phoneInput.value = operatorSelect.value;
+  });
 
-      if (!operatorPrefix) {
-        alert('Veuillez d’abord sélectionner un opérateur');
-        e.target.value = '';
-        return;
-      }
+  // 🔢 Validation du numéro de téléphone
+  phoneInput.addEventListener('input', (e) => {
+    let value = e.target.value.replace(/\D/g, '');
+    const prefix = operatorSelect.value;
 
-      // Force le préfixe de l'opérateur
-      if (!value.startsWith(operatorPrefix)) {
-        value = operatorPrefix + value.replace(new RegExp('^' + operatorPrefix), '');
-      }
+    if (!prefix) {
+      alert('Veuillez d’abord choisir un opérateur.');
+      e.target.value = '';
+      return;
+    }
 
-      // Limite à 10 chiffres
-      value = value.slice(0, 10);
+    if (!value.startsWith(prefix)) {
+      value = prefix + value.replace(new RegExp('^' + prefix), '');
+    }
 
-      e.target.value = value;
-    });
+    value = value.slice(0, 10);
+    e.target.value = value;
+  });
 
-    // 🌍 Chargement des communes (recherche dynamique)
-    document.getElementById('wilaya').addEventListener('change', function () {
-      const wilayaCode = this.value;
-      const searchInput = document.getElementById('commune-search');
-      const dropdown = document.getElementById('commune-dropdown');
-      const hiddenCommune = document.getElementById('commune');
+  // 🌍 Gestion des communes par wilaya
+  wilayaSelect.addEventListener('change', () => {
+    const wilayaCode = wilayaSelect.value;
+    communeSearch.value = '';
+    communeDropdown.innerHTML = '';
+    hiddenCommune.value = '';
 
-      // Réinitialiser
-      searchInput.disabled = !wilayaCode;
-      searchInput.value = '';
-      dropdown.innerHTML = '';
-      hiddenCommune.value = '';
+    if (!wilayaCode || !wilayaToCommunes[wilayaCode]) {
+      communeSearch.disabled = true;
+      return;
+    }
 
-      if (!wilayaCode || !wilayaToCommunes[wilayaCode]) return;
+    communeSearch.disabled = false;
+    const communes = [...new Set(wilayaToCommunes[wilayaCode])]; // Supprime doublons
 
-      const communes = wilayaToCommunes[wilayaCode];
+    function renderCommunes(filter = '') {
+      communeDropdown.innerHTML = '';
+      const filtered = communes.filter(c => c.toLowerCase().includes(filter.toLowerCase()));
+      filtered.forEach(commune => {
+        const div = document.createElement('div');
+        div.className = 'commune-option';
+        div.textContent = commune;
+        div.onclick = () => {
+          communeSearch.value = commune;
+          hiddenCommune.value = commune;
+          communeDropdown.innerHTML = '';
+        };
+        communeDropdown.appendChild(div);
+      });
+    }
 
-      // Fonction pour afficher les communes filtrées
-      function renderCommunes(filter = '') {
-        dropdown.innerHTML = '';
-        const filtered = communes.filter(c => c.toLowerCase().includes(filter.toLowerCase()));
-        filtered.forEach(commune => {
-          const div = document.createElement('div');
-          div.className = 'commune-option';
-          div.textContent = commune;
-          div.onclick = () => {
-            searchInput.value = commune;
-            hiddenCommune.value = commune;
-            dropdown.innerHTML = '';
-          };
-          dropdown.appendChild(div);
-        });
-      }
+    communeSearch.addEventListener('input', (e) => renderCommunes(e.target.value));
+    renderCommunes();
+  });
 
-      // Recherche en temps réel
-      searchInput.addEventListener('input', e => renderCommunes(e.target.value));
-      renderCommunes(); // Afficher toutes au début
-    });
+  // ✅ Validation finale avant envoi à Make.com
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
 
-    // ✅ Validation finale du formulaire
-    document.getElementById('orderForm').addEventListener('submit', function (e) {
-      e.preventDefault();
+    const fullName = document.getElementById('fullName').value.trim();
+    const phone = phoneInput.value;
+    const wilaya = wilayaSelect.value;
+    const commune = hiddenCommune.value;
+    const delivery = document.querySelector('input[name="delivery"]:checked').value;
 
-      const fullName = document.getElementById('fullName').value.trim();
-      const operator = document.getElementById('operator').value;
-      const phone = document.getElementById('phone').value;
-      const wilaya = document.getElementById('wilaya').value;
-      const commune = document.getElementById('commune').value;
-      const delivery = document.querySelector('input[name="delivery"]:checked').value;
+    if (!fullName || !operatorSelect.value || !phone || !wilaya || !commune) {
+      alert('Veuillez remplir tous les champs.');
+      return;
+    }
 
-      if (!fullName || !operator || !phone || !wilaya || !commune) {
-        alert('Veuillez remplir tous les champs.');
-        return;
-      }
+    if (phone.length !== 10) {
+      alert('Le numéro doit contenir exactement 10 chiffres.');
+      return;
+    }
 
-      if (!phone.startsWith(operator)) {
-        alert(`Le numéro doit commencer par ${operator} pour ${document.getElementById('operator').options[document.getElementById('operator').selectedIndex].text}`);
-        return;
-      }
+    if (!phone.startsWith(operatorSelect.value)) {
+      alert(`Le numéro doit commencer par ${operatorSelect.value}.`);
+      return;
+    }
 
-      if (phone.length !== 10) {
-        alert('Le numéro doit contenir exactement 10 chiffres.');
-        return;
-      }
-
-      alert(`Commande validée !\nNom: ${fullName}\nTéléphone: ${phone}\nOpérateur: ${document.getElementById('operator').options[document.getElementById('operator').selectedIndex].text}\nWilaya: ${document.getElementById('wilaya').options[document.getElementById('wilaya').selectedIndex].text}\nCommune: ${commune}\nLivraison: ${delivery === 'domicile' ? 'À domicile' : 'Yalidine'}`);
-      this.reset();
-      document.getElementById('commune-search').disabled = true;
-      document.getElementById('commune-dropdown').innerHTML = '';
-      document.getElementById('commune').value = '';
-    });
+    // ✅ Tout est OK → envoi automatique à Make.com via POST
+    alert(`Commande envoyée avec succès !\nNom: ${fullName}\nTéléphone: ${phone}\nWilaya: ${wilayaSelect.options[wilayaSelect.selectedIndex].text}\nCommune: ${commune}\nLivraison: ${delivery === 'domicile' ? 'À domicile' : 'Yalidine'}`);
+    form.submit(); // Envoie le formulaire à Make
+  });
   </script>
 </body>
 </html>

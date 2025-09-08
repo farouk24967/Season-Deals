@@ -556,22 +556,8 @@
         justify-content: center;
     }
 
-    /* --- Réorganisation des Produits --- */
-    .products-grid {
-        grid-template-columns: repeat(2, 1fr); /* Toujours 2 colonnes */
-        gap: 20px;
-        padding: 15px;
-        justify-items: center;
-    }
     
-    .product-card {
-        width: 100%;
-        max-width: 280px; /* Contrôle la largeur max par carte */
-        margin: 0;
-        font-size: 14px;
-        border-radius: 10px;
-    }
-
+   
     .product-img {
         height: 140px;
         background-color: #333;
@@ -615,25 +601,27 @@
         margin-bottom: 15px;
     }
 
-    .product-actions {
+   .product-actions {
         display: flex;
-        flex-direction: column;
-        gap: 10px;
+        justify-content: space-between;
         align-items: center;
+        gap: 15px;
+        width: 100%;
     }
 
     .add-to-cart {
-        width: 100%;
-        padding: 10px;
-        font-size: 0.95rem;
+        width: auto;
+        padding: 8px 3px;
+        font-size: 0.9rem;
         border-radius: 6px;
+        margin: 0 auto;
+        
     }
 
     .product-details {
         font-size: 0.9rem;
-        margin-top: 5px;
+        
     }
-
     /* --- Banner Responsive --- */
     .banner h2 {
         font-size: 1.8rem;
@@ -654,6 +642,21 @@
         grid-template-columns: 1fr;
     }
 }
+
+}
+@media (max-width: 480px) {
+    .products-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 20px !important;
+        padding: 15px !important;
+    }
+    .products-grid > * {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        margin: 0 !important;
+    }
 }
         
      
@@ -715,8 +718,7 @@
                 <div class="product-img">
                     <img src="" alt=  >
                 </div>
-                <div class="product-info">
-                    <div class="product-category">Rentrée Scolaire</div>
+                <div class="product-info">               
                     <h3 class="product-name">Cartable </h3>
                     <div class="product-price">6000 DA</div>
                     <div class="product-actions">
@@ -732,8 +734,7 @@
                 <div class="product-img">
                     <img src=""  >
                 </div>
-                <div class="product-info">
-                    <div class="product-category">  </div>
+                <div class="product-info">   
                     <h3 class="product-name">     </h3>
                     <div class="product-price">   </div>
                     <div class="product-actions">
@@ -749,7 +750,6 @@
                     <img src="" >
                 </div>
                 <div class="product-info">
-                    <div class="product-category">  </div>
                     <h3 class="product-name">      </h3>
                     <div class="product-price">     </div>
                     <div class="product-actions">
@@ -765,7 +765,6 @@
                      <img src="              " >
                 </div>
                 <div class="product-info">
-                    <div class="product-category">      </div>
                     <h3 class="product-name">       </h3>
                     <div class="product-price">          </div>
                     <div class="product-actions">
@@ -781,7 +780,6 @@
                     <img src="" >
                 </div>
                 <div class="product-info">
-                    <div class="product-category">Hiver</div>
                     <h3 class="product-name">     </h3>
                     <div class="product-price">   </div>
                     <div class="product-actions">
@@ -794,10 +792,9 @@
             <!-- Product 6 -->
             <div class="product-card">
                 <div class="product-img">
-                    <img src="" alt="Écharpe">
+                    <img src="">
                 </div>
                 <div class="product-info">
-                    <div class="product-category">     </div>
                     <h3 class="product-name">          </h3>
                     <div class="product-price">      </div>
                     <div class="product-actions">
